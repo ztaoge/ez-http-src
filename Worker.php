@@ -51,12 +51,12 @@ Class Worker
                     // accept
                     $newSocket = @stream_socket_accept($socket, -1, $remote_address);
                     $buffer = @fread($newSocket, 65536);
-                    $http->httpDecode($buffer);
-                    $http->handle();
-//                    var_dump($http);
-//                    $msg = "hello world!!!\n";
-                    $str = $http->response;
-                    @fwrite($newSocket, $str, strlen($str));
+                    if ($buffer) {
+                        $http->httpDecode($buffer);
+                        $http->handle();
+                        $str = $http->response;
+                        @fwrite($newSocket, $str, strlen($str));
+                    }
                     @fclose($newSocket);
                     unset($http);
                 }
@@ -73,7 +73,4 @@ Class Worker
             pcntl_wait($status, WUNTRACED);
         }
     }
-
-    public function send()
-    {}
 }
