@@ -8,6 +8,11 @@ class Http
     public $uri;
     public $response;
 
+    /**
+     * 构造http报文
+     * @param $content
+     * @return string
+     */
     public function httpEncode($content)
     {
         $header = '';
@@ -18,6 +23,10 @@ class Http
         return $header . $content;
     }
 
+    /**
+     * 解析http报文
+     * @param $buffer
+     */
     public function httpDecode($buffer)
     {
         list($http_header, $http_body) = explode("\r\n\r\n", $buffer, 2);
@@ -31,18 +40,15 @@ class Http
         $this->data = $http_body;
     }
 
-    public function handle()
+    /**
+     * 处理请求
+     * @param callable $callback
+     */
+    public function handle(callable $callback)
     {
         //TODO: create a routine map, and search method in routine map
 
-        $defaultController = 'IndexController';
-        $defaultMethod = 'index';
-        $controller = $defaultController;
-        $method = $defaultMethod;
-
-        $controllerNamespace = 'EzHttp\\';
-
-        $data = call_user_func_array([$controllerNamespace . $defaultController, 'index'], []);
+        $data = $callback();
 
         $this->response = $this->httpEncode($data);
     }

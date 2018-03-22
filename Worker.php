@@ -4,7 +4,11 @@ namespace EzHttp;
 Class Worker
 {
     public $mainSocket;
-    // child worker num
+
+    /**
+     * fork worker num
+     * @var int
+     */
     public $count = 1;
 
     /**
@@ -16,6 +20,12 @@ Class Worker
      * @var string application root dir
      */
     public $appRoot = ROOT . '/Application';
+
+    /**
+     * http处理回调
+     * @var callable
+     */
+    public $onMessage;
 
     public function __construct($host = null)
     {
@@ -53,7 +63,7 @@ Class Worker
                     $buffer = @fread($newSocket, 65536);
                     if ($buffer) {
                         $http->httpDecode($buffer);
-                        $http->handle();
+                        $http->handle($this->onMessage);
                         $str = $http->response;
                         @fwrite($newSocket, $str, strlen($str));
                     }
